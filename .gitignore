@@ -1,4 +1,48 @@
+# =========================
+# Terraform
+# =========================
+
+# Terraform local files
 .terraform/
 *.tfstate
 *.tfstate.*
+*.tfstate.backup
+
+# Lock info (generated)
+.terraform.tfstate.lock.info
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Variables (може да съдържат secrets)
+*.tfvars
+*.tfvars.json
+
+# =========================
+# Node.js
+# =========================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env files (ако имаш)
+.env
+.env.*
+
+# =========================
+# System / IDE
+# =========================
+
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# =========================
+# Lambda build
+# =========================
+
 *.zip
