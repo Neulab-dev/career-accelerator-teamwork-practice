@@ -12,6 +12,9 @@ const MAX_HASH_ATTEMPTS = Number(process.env.MAX_HASH_ATTEMPTS || 10);
 function createResponse(statusCode, payload) {
     return {
         statusCode,
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify(payload)
     };
 }
@@ -44,68 +47,58 @@ function isValidUrl(url) {
 }
 
 async function hashExists(hash) {
-    const params = {
+    const result = await dynamodb.send(new GetCommand({
         TableName: TABLE_NAME,
         Key: { hash }
-    };
-
-    const result = await dynamodb.send(new GetCommand(params));
+    }));
     return !!result.Item;
 }
 
 async function saveUrlMapping(hash, originalUrl) {
-    const params = {
+    await dynamodb.send(new PutCommand({
         TableName: TABLE_NAME,
-        Item: {
-            hash,
-            originalUrl
-        }
-    };
-
-    await dynamodb.send(new PutCommand(params));
+        Item: { hash, originalUrl },
+    ConditionExpression: "attribute_not_exists(hash)"
+}));
 }
 
 export const handler = async (event) => {
     try {
         if (!TABLE_NAME) {
-            return createResponse(500, { error: "TABLE_NAME environment variable is not set" });
+            return createResponse(500, { error: "TABLE_NAME not set" });
         }
 
         const body = parseRequestBody(event);
-
         if (!body) {
             return createResponse(400, { error: "Invalid JSON body" });
         }
 
         const url = body?.url;
-
         if (!url) {
-            return createResponse(400, { error: "Missing 'url' in request body" });
+            return createResponse(400, { error: "Missing url" });
         }
 
         if (!isValidUrl(url)) {
-            return createResponse(400, { error: "Invalid URL format" });
+            return createResponse(400, { error: "Invalid URL" });
         }
 
         let hash = generateHash(url);
         let attempts = 0;
 
         while (await hashExists(hash)) {
-            attempts++;
-
-            if (attempts >= MAX_HASH_ATTEMPTS) {
-                return createResponse(500, { error: "Unable to generate unique hash" });
+            if (++attempts >= MAX_HASH_ATTEMPTS) {
+                return createResponse(500, { error: "Hash collision limit reached" });
             }
 
-            const randomNumber = Math.floor(Math.random() * 1000000);
-            hash = generateHash(url + randomNumber);
+            hash = generateHash(url + Math.random());
         }
 
         await saveUrlMapping(hash, url);
 
         return createResponse(201, { hash });
-    } catch (error) {
-        console.error("Error generating hash:", error);
-        return createResponse(500, { error: "Internal server error" });
+
+    } catch (err) {
+        console.error(err);
+        return createResponse(500, { error: "Internal error" });
     }
 };
