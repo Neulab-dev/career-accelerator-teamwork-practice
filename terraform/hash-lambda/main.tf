@@ -104,3 +104,7 @@ output "lambda_name" {
 output "lambda_arn" {
   value = aws_lambda_function.hash_lambda.arn
 }
+
+output "lambda_invoke_arn" {
+  value = aws_lambda_function.hash_lambda.invoke_arn
+}
