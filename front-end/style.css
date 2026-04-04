@@ -17,10 +17,10 @@ body {
 .container {
   width: 100%;
   max-width: 500px;
-  background: #ffffff;
+  background: #fff;
   padding: 30px;
   border-radius: 14px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 8%);
 }
 
 h1 {
@@ -96,7 +96,7 @@ button:hover {
   word-break: break-all;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .container {
     padding: 20px;
   }
