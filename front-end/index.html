@@ -1,33 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>URL Shortener</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <h1>URL Shortener</h1>
-    <p class="subtitle">Paste a long URL to display a short link preview.</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>URL Shortener</h1>
+      <p class="subtitle">Paste a long URL to display a short link preview.</p>
 
-    <form class="shortener-form">
-      <label for="longUrl">Enter long URL</label>
-      <input
-        type="url"
-        id="longUrl"
-        name="longUrl"
-        placeholder="https://example.com/very-long-link"
-        required
-      >
+      <form class="shortener-form">
+        <label for="longUrl">Enter long URL</label>
+        <input
+          type="url"
+          id="longUrl"
+          name="longUrl"
+          placeholder="https://example.com/very-long-link"
+          required
+        />
 
-      <button type="submit">Shorten URL</button>
-    </form>
+        <button type="submit">Shorten URL</button>
+      </form>
 
-    <div class="result-box">
-      <h2>Short URL</h2>
-      <p class="short-url">short.ly/abc123</p>
+      <div class="result-box">
+        <h2>Short URL</h2>
+        <p class="short-url">short.ly/abc123</p>
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>
