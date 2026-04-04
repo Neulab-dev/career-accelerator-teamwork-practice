@@ -10,7 +10,7 @@
   },
   "scripts": {
     "format:check": "prettier . --check",
-    "lint:js": "eslint .",
+    "lint:js": "eslint \"**/*.js\"",
     "lint:html": "htmlhint \"front-end/**/*.html\"",
     "lint:css": "stylelint \"front-end/**/*.css\""
   },
