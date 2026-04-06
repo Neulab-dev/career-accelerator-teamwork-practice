@@ -58,8 +58,8 @@ async function saveUrlMapping(hash, originalUrl) {
     await dynamodb.send(new PutCommand({
         TableName: TABLE_NAME,
         Item: { hash, originalUrl },
-    ConditionExpression: "attribute_not_exists(hash)"
-}));
+        ConditionExpression: "attribute_not_exists(hash)"
+    }));
 }
 
 export const handler = async (event) => {
@@ -89,7 +89,6 @@ export const handler = async (event) => {
             if (++attempts >= MAX_HASH_ATTEMPTS) {
                 return createResponse(500, { error: "Hash collision limit reached" });
             }
-
             hash = generateHash(url + Math.random());
         }
 
