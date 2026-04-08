@@ -15,3 +15,6 @@ variable "max_hash_attempts" {
   type    = number
   default = 10
 }
+variable "table_arn" {
+  type = string
+}

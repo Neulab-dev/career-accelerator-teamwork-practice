@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 
@@ -89,7 +89,8 @@ export const handler = async (event) => {
             if (++attempts >= MAX_HASH_ATTEMPTS) {
                 return createResponse(500, { error: "Hash collision limit reached" });
             }
-            hash = generateHash(url + Math.random());
+            const randomSuffix = crypto.randomBytes(4).toString("hex");
+            hash = generateHash(url + randomSuffix);
         }
 
         await saveUrlMapping(hash, url);

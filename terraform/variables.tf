@@ -11,7 +11,3 @@ variable "max_hash_attempts" {
 variable "prefix" {
   default = "shortly"
 }
-
-variable "table_name" {
-  default = "shortly-urls"
-}

@@ -1,8 +1,5 @@
 terraform {
   required_providers {
-    aws = {
-      source = "hashicorp/aws"
-    }
     archive = {
       source = "hashicorp/archive"
     }
@@ -38,18 +35,6 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-# DynamoDB
-resource "aws_dynamodb_table" "shortly" {
-  name         = var.table_name
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "hash"
-
-  attribute {
-    name = "hash"
-    type = "S"
-  }
-}
-
 # policy
 resource "aws_iam_role_policy" "dynamodb_policy" {
   name = "${var.prefix}-dynamodb-policy"
@@ -63,7 +48,7 @@ resource "aws_iam_role_policy" "dynamodb_policy" {
         "dynamodb:GetItem",
         "dynamodb:PutItem"
       ]
-      Resource = aws_dynamodb_table.shortly.arn
+      Resource = var.table_arn
     }]
   })
 }

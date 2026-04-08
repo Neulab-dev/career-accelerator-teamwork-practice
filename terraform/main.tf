@@ -18,6 +18,7 @@ locals {
   table_name        = "shortly-urls"
   hash_length       = 6
   max_hash_attempts = 10
+  table_arn         = aws_dynamodb_table.shortly.arn
 }
 
 module "hash_lambda" {
@@ -25,4 +26,17 @@ module "hash_lambda" {
 
   prefix            = local.prefix
   table_name        = local.table_name
+  table_arn         = local.table_arn
+}
+
+# DynamoDB
+resource "aws_dynamodb_table" "shortly" {
+  name         = local.table_name
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "hash"
+
+  attribute {
+    name = "hash"
+    type = "S"
+  }
 }
