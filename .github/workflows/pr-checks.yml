@@ -160,7 +160,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-    snyk:
+  snyk:
     name: Snyk
     runs-on: ubuntu-latest
     steps:
