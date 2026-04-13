@@ -2,11 +2,22 @@
   "name": "career-accelerator-teamwork-practice",
   "version": "1.0.0",
   "private": true,
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Neulab-dev/career-accelerator-teamwork-practice.git"
+  },
   "scripts": {
     "format:check": "prettier . --check",
     "lint:js": "eslint \"**/*.js\"",
     "lint:html": "htmlhint \"front-end/**/*.html\"",
-    "lint:css": "stylelint \"front-end/**/*.css\""
+    "lint:css": "stylelint \"front-end/**/*.css\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1024.0",
+    "@aws-sdk/lib-dynamodb": "^3.1024.0"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
