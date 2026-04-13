@@ -1,11 +1,3 @@
-terraform {
-  required_providers {
-    archive = {
-      source = "hashicorp/archive"
-    }
-  }
-}
-
 # ZIP lambda
 data "archive_file" "lambda_zip" {
   type        = "zip"
