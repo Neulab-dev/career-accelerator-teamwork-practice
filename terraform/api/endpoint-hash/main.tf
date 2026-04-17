@@ -1,47 +1,43 @@
-resource "aws_api_gateway_method" "endpoint_method" {
-  rest_api_id   = var.api_id
-  resource_id   = var.resource_id
-  http_method   = var.http_method
+resource "aws_api_gateway_resource" "hash_resource" {
+  rest_api_id = var.rest_api_config.api_id
+  parent_id   = var.rest_api_config.root_resource_id
+  path_part   = "hash"
+}
+
+resource "aws_api_gateway_method" "hash_method" {
+  rest_api_id   = var.rest_api_config.api_id
+  resource_id   = aws_api_gateway_resource.hash_resource.id
+  http_method   = "POST"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "lambda_integration" {
-  rest_api_id = var.api_id
-  resource_id = var.resource_id
-  http_method = aws_api_gateway_method.endpoint_method.http_method
+resource "aws_lambda_permission" "allow_apigateway" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = module.hash_lambda.lambda_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${var.rest_api_config.execution_arn}/*/POST/hash"
+}
+
+resource "aws_api_gateway_integration" "hash_integration" {
+  rest_api_id             = var.rest_api_config.api_id
+  resource_id             = aws_api_gateway_resource.hash_resource.id
+  http_method             = "POST"
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
+  uri                     = module.hash_lambda.invoke_lambda_arn
 
-  uri = var.lambda_invoke_arn
+  depends_on = [aws_api_gateway_method.hash_method]
 }
 
-resource "aws_lambda_permission" "allow_apigw" {
-  statement_id  = "AllowExecutionFromAPIGateway-${var.endpoint_name}"
-  action        = "lambda:InvokeFunction"
-  function_name = var.lambda_function_name
-  principal     = "apigateway.amazonaws.com"
+# TODO you can get table name from table arn
+module "hash_lambda" {
+  source = "./hash-lambda"
 
-  source_arn = "${var.execution_arn}/*/*"
-}
-
-# Deployment
-resource "aws_api_gateway_deployment" "this" {
-  rest_api_id = var.api_id
-
-  triggers = {
-    redeployment = sha1(jsonencode([
-      aws_api_gateway_integration.lambda_integration.id
-    ]))
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_api_gateway_stage" "this" {
-  rest_api_id   = var.api_id
-  deployment_id = aws_api_gateway_deployment.this.id
-  stage_name    = "prod"
+  prefix            = var.prefix
+  table_arn         = var.table_arn
+  max_hash_attempts = var.max_hash_attempts
+  hash_length       = var.hash_length
 }

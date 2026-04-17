@@ -1,3 +1,7 @@
-output "invoke_url" {
-  value = "${aws_api_gateway_stage.this.invoke_url}/${var.endpoint_name}"
+output "resource_ids" {
+  value = [
+    aws_api_gateway_resource.hash_resource.id,
+    aws_api_gateway_method.hash_method.id,
+    aws_api_gateway_integration.hash_integration.id,
+  ]
 }

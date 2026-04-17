@@ -54,10 +54,9 @@ resource "aws_lambda_function" "hash_lambda" {
 
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-
   environment {
     variables = {
-      TABLE_NAME   = var.table_name
+      TABLE_NAME   = split("/", var.table_arn)[1]
       HASH_LENGTH  = tostring(var.hash_length)
       MAX_HASH_ATTEMPTS = tostring(var.max_hash_attempts)
     }
