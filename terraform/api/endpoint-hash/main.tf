@@ -32,7 +32,6 @@ resource "aws_api_gateway_integration" "hash_integration" {
   depends_on = [aws_api_gateway_method.hash_method]
 }
 
-# TODO you can get table name from table arn
 module "hash_lambda" {
   source = "./hash-lambda"
 
