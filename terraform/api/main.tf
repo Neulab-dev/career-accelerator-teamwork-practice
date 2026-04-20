@@ -28,18 +28,21 @@ resource "aws_api_gateway_stage" "api_stage" {
   stage_name    = "prod"
 }
 
-
 module "endpoint_hash" {
   source = "./endpoint-hash"
 
-  api_id               = ""
-  endpoint_name        = ""
-  execution_arn        = ""
-  http_method          = ""
-  lambda_function_name = ""
-  lambda_invoke_arn    = ""
-  prefix               = ""
-  resource_id          = ""
-  table_arn            = ""
-  table_name           = ""
+  rest_api_config = {
+    api_id           = aws_api_gateway_rest_api.api.id
+    root_resource_id = aws_api_gateway_rest_api.api.root_resource_id
+    execution_arn    = aws_api_gateway_rest_api.api.execution_arn
+  }
+
+  prefix            = var.prefix
+  table_arn         = var.table_arn
+  hash_length       = var.hash_length
+  max_hash_attempts = var.max_hash_attempts
+}
+
+output "api_invoke_url" {
+  value = "${aws_api_gateway_stage.api_stage.invoke_url}/hash"
 }

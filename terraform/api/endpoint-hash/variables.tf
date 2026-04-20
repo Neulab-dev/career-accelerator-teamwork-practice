@@ -1,24 +1,28 @@
 variable "rest_api_config" {
   type = object({
-    api_id = string
+    api_id           = string
     root_resource_id = string
-    execution_arn = string
+    execution_arn    = string
   })
-  description = "Rest API configuration"
+  description = "Configuration for the REST API (ID, root resource ID, and execution ARN)."
 }
-#TODO add description to the variables
+
 variable "prefix" {
-  type = string
+  type        = string
+  description = "A prefix to be used for naming resources."
 }
 
 variable "table_arn" {
-  type = string
+  type        = string
+  description = "The ARN of the DynamoDB table."
 }
 
 variable "hash_length" {
-  type = number
+  type        = number
+  description = "The length of the generated hash."
 }
 
 variable "max_hash_attempts" {
-  type = number
+  type        = number
+  description = "The maximum number of attempts to generate a unique hash."
 }
