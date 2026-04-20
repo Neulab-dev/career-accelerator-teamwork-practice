@@ -58,7 +58,10 @@ async function saveUrlMapping(hash, originalUrl) {
     await dynamodb.send(new PutCommand({
         TableName: TABLE_NAME,
         Item: { hash, originalUrl },
-        ConditionExpression: "attribute_not_exists(hash)"
+        ConditionExpression: "attribute_not_exists(#h)",
+        ExpressionAttributeNames: {
+            "#h": "hash"
+        }
     }));
 }
 

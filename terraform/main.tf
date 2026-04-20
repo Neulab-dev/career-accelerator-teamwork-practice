@@ -21,14 +21,6 @@ locals {
   table_arn         = aws_dynamodb_table.shortly.arn
 }
 
-module "hash_lambda" {
-  source = "./hash-lambda"
-
-  prefix            = local.prefix
-  table_name        = local.table_name
-  table_arn         = local.table_arn
-}
-
 # DynamoDB
 resource "aws_dynamodb_table" "shortly" {
   name         = local.table_name
@@ -39,4 +31,13 @@ resource "aws_dynamodb_table" "shortly" {
     name = "hash"
     type = "S"
   }
+}
+
+module "api" {
+  source = "./api"
+
+  prefix            = local.prefix
+  table_arn         = local.table_arn
+  hash_length       = local.hash_length
+  max_hash_attempts = local.max_hash_attempts
 }
