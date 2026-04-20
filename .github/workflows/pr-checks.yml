@@ -121,7 +121,7 @@ jobs:
       - name: Terraform validate
         run: terraform validate
 
- gitguardian:
+  gitguardian:
   name: GitGuardian scan
   runs-on: ubuntu-latest
   steps:
@@ -152,10 +152,10 @@ jobs:
           directory: terraform
           framework: terraform
 
- snyk:
-  name: Snyk
-  runs-on: ubuntu-latest
-  steps:
+  snyk:
+    name: Snyk
+    runs-on: ubuntu-latest
+    steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
