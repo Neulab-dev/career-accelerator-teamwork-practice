@@ -14,7 +14,7 @@ body {
 }
 
 body::before {
-  content: "";
+  content: '';
   position: absolute;
   width: 500px;
   height: 500px;
@@ -33,8 +33,8 @@ body::before {
   flex-direction: column;
   gap: 16px;
   box-shadow:
-          0 0 25px rgb(74 144 226 / 25%),
-          0 0 60px rgb(74 144 226 / 15%);
+    0 0 25px rgb(74 144 226 / 25%),
+    0 0 60px rgb(74 144 226 / 15%);
 }
 
 h1 {
