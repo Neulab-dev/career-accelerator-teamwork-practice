@@ -163,7 +163,11 @@ jobs:
           node-version: 20
           cache: npm
 
+<<<<<<< HEAD
       - name: Install dependencies
+=======
+      - name: Install root dependencies
+>>>>>>> origin/main
         run: npm install
 
       - name: Run Snyk for Node project
@@ -171,4 +175,8 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
+<<<<<<< HEAD
           args: --severity-threshold=high
+=======
+          args: --severity-threshold=high
+>>>>>>> origin/main

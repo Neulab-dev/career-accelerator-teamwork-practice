@@ -12,12 +12,7 @@
     "format:check": "prettier . --check",
     "lint:js": "eslint \"**/*.js\"",
     "lint:html": "htmlhint \"front-end/**/*.html\"",
-    "lint:css": "stylelint \"front-end/**/*.css\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.1024.0",
-    "@aws-sdk/lib-dynamodb": "^3.1024.0"
+    "lint:css": "stylelint \"front-end/**/*.css\""
   },
   "devDependencies": {
     "eslint": "^8.57.0",
