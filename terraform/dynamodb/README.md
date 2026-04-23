@@ -34,8 +34,8 @@ Terraform module that provisions the DynamoDB table used by the Shortly URL shor
 
 ## Inputs
 
-| Name     | Type   | Description                                                       |
-| -------- | ------ | ----------------------------------------------------------------- |
+| Name     | Type   | Description                                                         |
+| -------- | ------ | ------------------------------------------------------------------- |
 | `prefix` | string | Environment prefix prepended to the table name (e.g. `dev`, `prod`) |
 
 ## Outputs
