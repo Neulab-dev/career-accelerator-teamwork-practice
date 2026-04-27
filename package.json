@@ -10,9 +10,5 @@
     "type": "git",
     "url": "https://github.com/Neulab-dev/career-accelerator-teamwork-practice.git"
   },
-  "private": true,
-  "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.1024.0",
-    "@aws-sdk/lib-dynamodb": "^3.1024.0"
-  }
+  "private": true
 }
