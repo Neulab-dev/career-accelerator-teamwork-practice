@@ -18,7 +18,7 @@ locals {
   table_name        = "shortly-urls"
   hash_length       = 6
   max_hash_attempts = 10
-  table_arn = aws_dynamodb_table.shortly.arn
+  table_arn         = aws_dynamodb_table.shortly.arn
 }
 
 # DynamoDB
@@ -30,6 +30,11 @@ resource "aws_dynamodb_table" "shortly" {
   attribute {
     name = "hash"
     type = "S"
+  }
+
+  ttl {
+    attribute_name = "ttl"
+    enabled        = true
   }
 }
 

@@ -12,6 +12,8 @@ const dynamodb = DynamoDBDocumentClient.from(client);
 const TABLE_NAME = process.env.TABLE_NAME;
 const HASH_LENGTH = Number(process.env.HASH_LENGTH || 6);
 const MAX_HASH_ATTEMPTS = Number(process.env.MAX_HASH_ATTEMPTS || 10);
+  // 5256000 = 2 months in seconds
+const TTL_DURATION = Number(process.env.TTL_DURATION || 5256000);
 
 function createResponse(statusCode, payload) {
   return {
@@ -59,10 +61,11 @@ async function hashExists(hash) {
 }
 
 async function saveUrlMapping(hash, originalUrl) {
+  const ttl = Math.floor(Date.now() / 1000) + TTL_DURATION;
   await dynamodb.send(
     new PutCommand({
       TableName: TABLE_NAME,
-      Item: { hash, originalUrl },
+      Item: { hash, originalUrl, ttl },
       ConditionExpression: 'attribute_not_exists(#h)',
       ExpressionAttributeNames: {
         '#h': 'hash',
