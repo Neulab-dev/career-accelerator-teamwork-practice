@@ -1,7 +1,7 @@
 # ZIP lambda
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_file = "${path.module}/lambda-code/lambda.js"
+  source_file = "${path.module}/lambda-code/lambda.mjs"
   output_path = "${path.module}/lambda.zip"
 }
 

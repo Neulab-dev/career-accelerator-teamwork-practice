@@ -31,6 +31,11 @@ resource "aws_dynamodb_table" "shortly" {
     name = "hash"
     type = "S"
   }
+
+  ttl {
+    attribute_name = "ttl"
+    enabled        = true
+  }
 }
 
 module "api" {
