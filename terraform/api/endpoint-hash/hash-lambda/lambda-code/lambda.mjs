@@ -12,7 +12,7 @@ const dynamodb = DynamoDBDocumentClient.from(client);
 const TABLE_NAME = process.env.TABLE_NAME;
 const HASH_LENGTH = Number(process.env.HASH_LENGTH || 6);
 const MAX_HASH_ATTEMPTS = Number(process.env.MAX_HASH_ATTEMPTS || 10);
-  // 5256000 = 2 months in seconds
+// 5256000 = 2 months in seconds
 const TTL_DURATION = Number(process.env.TTL_DURATION || 5256000);
 
 function createResponse(statusCode, payload) {
