@@ -1,7 +1,7 @@
 # ZIP lambda
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_file = "${path.module}/lambda-code/lambda.mjs"
+  source_dir  = "${path.module}/lambda-code"
   output_path = "${path.module}/lambda.zip"
 }
 
@@ -56,8 +56,8 @@ resource "aws_lambda_function" "hash_lambda" {
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
   environment {
     variables = {
-      TABLE_NAME   = split("/", var.table_arn)[1]
-      HASH_LENGTH  = tostring(var.hash_length)
+      TABLE_NAME        = split("/", var.table_arn)[1]
+      HASH_LENGTH       = tostring(var.hash_length)
       MAX_HASH_ATTEMPTS = tostring(var.max_hash_attempts)
     }
   }
