@@ -10,6 +10,7 @@
   },
   "scripts": {
     "format:check": "prettier . --check",
+    "format": "prettier . --write",
     "lint:js": "eslint \"**/*.js\"",
     "lint:html": "htmlhint \"front-end/**/*.html\"",
     "lint:css": "stylelint \"front-end/**/*.css\""
