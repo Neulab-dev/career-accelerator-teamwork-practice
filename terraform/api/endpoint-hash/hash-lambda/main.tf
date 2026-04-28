@@ -1,7 +1,7 @@
 # ZIP lambda
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_file = "${path.module}/lambda-code/lambda.js"
+  source_dir  = "${path.module}/lambda-code"
   output_path = "${path.module}/lambda.zip"
 }
 
@@ -25,6 +25,12 @@ resource "aws_iam_role" "lambda_role" {
 resource "aws_iam_role_policy_attachment" "lambda_basic" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+// For X-Ray permissions
+resource "aws_iam_role_policy_attachment" "lambda_xray" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
 }
 
 # policy
@@ -51,13 +57,21 @@ resource "aws_lambda_function" "hash_lambda" {
   role          = aws_iam_role.lambda_role.arn
   handler       = "lambda.handler"
   runtime       = "nodejs24.x"
+  // This prevents the Lambda from scaling infinitely
+  reserved_concurrent_executions = 10
 
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+
+  // for X-Ray
+  tracing_config {
+    mode = "Active"
+  }
+
   environment {
     variables = {
-      TABLE_NAME   = split("/", var.table_arn)[1]
-      HASH_LENGTH  = tostring(var.hash_length)
+      TABLE_NAME        = split("/", var.table_arn)[1]
+      HASH_LENGTH       = tostring(var.hash_length)
       MAX_HASH_ATTEMPTS = tostring(var.max_hash_attempts)
     }
   }

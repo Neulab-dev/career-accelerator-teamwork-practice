@@ -21,9 +21,9 @@ resource "aws_lambda_permission" "allow_apigateway" {
 }
 
 resource "aws_api_gateway_integration" "hash_integration" {
-  rest_api_id             = var.rest_api_config.api_id
-  resource_id             = aws_api_gateway_resource.hash_resource.id
-  http_method             = "POST"
+  rest_api_id = var.rest_api_config.api_id
+  resource_id = aws_api_gateway_resource.hash_resource.id
+  http_method = "POST"
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
