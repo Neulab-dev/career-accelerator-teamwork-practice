@@ -67,6 +67,11 @@ resource "aws_lambda_function" "hash_lambda" {
   tracing_config {
     mode = "Active"
   }
+  vpc_config {
+    // We are adding this for security reasons - https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1
+    subnet_ids         = var.private_subnets_ids
+    security_group_ids = [aws_security_group.hash_lambda_sg.id]
+}
 
   environment {
     variables = {
@@ -75,4 +80,10 @@ resource "aws_lambda_function" "hash_lambda" {
       MAX_HASH_ATTEMPTS = tostring(var.max_hash_attempts)
     }
   }
+}
+
+resource "aws_security_group" "hash_lambda_sg" {
+  name = "${var.prefix}-hash-lambda"
+
+
 }

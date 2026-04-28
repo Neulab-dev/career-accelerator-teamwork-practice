@@ -19,3 +19,8 @@ variable "table_arn" {
   type        = string
   description = "The ARN of the DynamoDB table the Lambda function will interact with."
 }
+
+variable "private_subnets_ids" {
+  type = list(string)
+  description = "The ids for the subnets"
+}

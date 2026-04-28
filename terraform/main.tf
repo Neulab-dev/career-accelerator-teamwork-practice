@@ -22,14 +22,21 @@ locals {
 module "api" {
   source = "./api"
 
-  prefix            = local.prefix
-  table_arn         = module.dynamodb.table_arn
-  hash_length       = local.hash_length
-  max_hash_attempts = local.max_hash_attempts
+  prefix              = local.prefix
+  table_arn           = module.dynamodb.table_arn
+  hash_length         = local.hash_length
+  max_hash_attempts   = local.max_hash_attempts
+  private_subnets_ids = module.network.private_subnet_ids
 }
 
 module "dynamodb" {
   source = "./dynamodb"
+
+  prefix = local.prefix
+}
+
+module "network" {
+  source = "./network"
 
   prefix = local.prefix
 }

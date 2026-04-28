@@ -39,4 +39,5 @@ module "hash_lambda" {
   table_arn         = var.table_arn
   max_hash_attempts = var.max_hash_attempts
   hash_length       = var.hash_length
+  private_subnets_ids = var.private_subnets_ids
 }

@@ -46,6 +46,7 @@ module "endpoint_hash" {
   table_arn         = var.table_arn
   hash_length       = var.hash_length
   max_hash_attempts = var.max_hash_attempts
+  private_subnets_ids = var.private_subnets_ids
 }
 
 resource "aws_kms_key" "lambda_env" {

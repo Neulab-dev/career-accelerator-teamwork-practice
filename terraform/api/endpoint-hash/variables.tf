@@ -26,3 +26,8 @@ variable "max_hash_attempts" {
   type        = number
   description = "The maximum number of attempts to generate a unique hash."
 }
+
+variable "private_subnets_ids" {
+  type = list(string)
+  description = "The ids for the subnets"
+}
