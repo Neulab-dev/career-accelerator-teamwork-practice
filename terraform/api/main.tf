@@ -1,6 +1,11 @@
 resource "aws_api_gateway_rest_api" "api" {
   name        = "${var.prefix}-api"
   description = "API Gateway for the Shortly service"
+
+  // helps with downtime, basically terraform might destroy an API and then recreate it, but this forces it to first create it and then delete it.
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_api_gateway_deployment" "api_deployment" {
@@ -43,6 +48,13 @@ module "endpoint_hash" {
   max_hash_attempts = var.max_hash_attempts
 }
 
-output "api_invoke_url" {
-  value = "${aws_api_gateway_stage.api_stage.invoke_url}/hash"
+resource "aws_kms_key" "lambda_env" {
+  description             = "KMS key for Lambda environment variables"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+}
+
+resource "aws_kms_alias" "lambda_env" {
+  name          = "alias/${var.prefix}-lambda-env"
+  target_key_id = aws_kms_key.lambda_env.key_id
 }

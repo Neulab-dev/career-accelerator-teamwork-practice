@@ -1,0 +1,11 @@
+{
+  "name": "hash-lambda",
+  "version": "1.0.0",
+  "description": "Lambda function for hashing URLs",
+  "type": "module",
+  "main": "lambda.mjs",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1024.0",
+    "@aws-sdk/lib-dynamodb": "^3.1024.0"
+  }
+}

@@ -27,6 +27,12 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+// For X-Ray permissions
+resource "aws_iam_role_policy_attachment" "lambda_xray" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+}
+
 # policy
 resource "aws_iam_role_policy" "dynamodb_policy" {
   name = "${var.prefix}-dynamodb-policy"
@@ -51,9 +57,17 @@ resource "aws_lambda_function" "hash_lambda" {
   role          = aws_iam_role.lambda_role.arn
   handler       = "lambda.handler"
   runtime       = "nodejs24.x"
+  // This prevents the Lambda from scaling infinitely
+  reserved_concurrent_executions = 10
 
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+
+  // for X-Ray
+  tracing_config {
+    mode = "Active"
+  }
+
   environment {
     variables = {
       TABLE_NAME        = split("/", var.table_arn)[1]
