@@ -21,6 +21,6 @@ variable "table_arn" {
 }
 
 variable "private_subnets_ids" {
-  type = list(string)
+  type        = list(string)
   description = "The ids for the subnets"
 }

@@ -42,10 +42,10 @@ module "endpoint_hash" {
     execution_arn    = aws_api_gateway_rest_api.api.execution_arn
   }
 
-  prefix            = var.prefix
-  table_arn         = var.table_arn
-  hash_length       = var.hash_length
-  max_hash_attempts = var.max_hash_attempts
+  prefix              = var.prefix
+  table_arn           = var.table_arn
+  hash_length         = var.hash_length
+  max_hash_attempts   = var.max_hash_attempts
   private_subnets_ids = var.private_subnets_ids
 }
 

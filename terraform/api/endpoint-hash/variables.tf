@@ -28,6 +28,6 @@ variable "max_hash_attempts" {
 }
 
 variable "private_subnets_ids" {
-  type = list(string)
+  type        = list(string)
   description = "The ids for the subnets"
 }
