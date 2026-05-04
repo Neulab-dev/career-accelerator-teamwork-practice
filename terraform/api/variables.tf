@@ -22,3 +22,8 @@ variable "private_subnets_ids" {
   type        = list(string)
   description = "The ids for the subnets"
 }
+
+variable "vpc_id" {
+  type        = string
+  description = "VPC ID used by API-related Lambda resources"
+}

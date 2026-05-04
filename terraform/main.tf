@@ -27,6 +27,7 @@ module "api" {
   hash_length         = local.hash_length
   max_hash_attempts   = local.max_hash_attempts
   private_subnets_ids = module.network.private_subnet_ids
+  vpc_id              = module.network.vpc_id
 }
 
 module "dynamodb" {

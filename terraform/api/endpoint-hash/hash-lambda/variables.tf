@@ -24,3 +24,13 @@ variable "private_subnets_ids" {
   type        = list(string)
   description = "The ids for the subnets"
 }
+
+variable "lambda_kms_key_arn" {
+  type        = string
+  description = "KMS key ARN used to encrypt Lambda environment variables"
+}
+
+variable "vpc_id" {
+  type        = string
+  description = "VPC ID where the Lambda security group will be created"
+}

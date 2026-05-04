@@ -63,6 +63,7 @@ resource "aws_lambda_function" "hash_lambda" {
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
+  kms_key_arn = var.lambda_kms_key_arn
   // for X-Ray
   tracing_config {
     mode = "Active"
@@ -83,5 +84,7 @@ resource "aws_lambda_function" "hash_lambda" {
 }
 
 resource "aws_security_group" "hash_lambda_sg" {
-  name = "${var.prefix}-hash-lambda"
+  name        = "${var.prefix}-hash-lambda"
+  description = "Security group for the hash Lambda function"
+  vpc_id      = var.vpc_id
 }

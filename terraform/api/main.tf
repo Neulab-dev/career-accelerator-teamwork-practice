@@ -35,6 +35,23 @@ resource "aws_api_gateway_stage" "api_stage" {
   stage_name    = "prod"
 
   xray_tracing_enabled = true
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gateway_logs.arn
+
+    format = jsonencode({
+      requestId      = "$context.requestId"
+      ip             = "$context.identity.sourceIp"
+      caller         = "$context.identity.caller"
+      user           = "$context.identity.user"
+      requestTime    = "$context.requestTime"
+      httpMethod     = "$context.httpMethod"
+      resourcePath   = "$context.resourcePath"
+      status         = "$context.status"
+      protocol       = "$context.protocol"
+      responseLength = "$context.responseLength"
+    })
+  }
 }
 
 module "endpoint_hash" {
@@ -51,6 +68,8 @@ module "endpoint_hash" {
   hash_length         = var.hash_length
   max_hash_attempts   = var.max_hash_attempts
   private_subnets_ids = var.private_subnets_ids
+  lambda_kms_key_arn  = aws_kms_key.lambda_env.arn
+  vpc_id              = var.vpc_id
 }
 
 resource "aws_kms_key" "lambda_env" {
@@ -76,4 +95,21 @@ resource "aws_kms_key" "lambda_env" {
 resource "aws_kms_alias" "lambda_env" {
   name          = "alias/${var.prefix}-lambda-env"
   target_key_id = aws_kms_key.lambda_env.key_id
+}
+
+resource "aws_api_gateway_method_settings" "api_settings" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  stage_name  = aws_api_gateway_stage.api_stage.stage_name
+  method_path = "*/*"
+
+  settings {
+    logging_level      = "INFO"
+    metrics_enabled    = true
+    data_trace_enabled = false
+  }
+}
+
+resource "aws_cloudwatch_log_group" "api_gateway_logs" {
+  name              = "/aws/api-gateway/${var.prefix}-api"
+  retention_in_days = 7
 }
