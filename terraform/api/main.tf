@@ -31,6 +31,8 @@ resource "aws_api_gateway_stage" "api_stage" {
   deployment_id = aws_api_gateway_deployment.api_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.api.id
   stage_name    = "prod"
+
+  xray_tracing_enabled = true
 }
 
 module "endpoint_hash" {
@@ -53,9 +55,24 @@ resource "aws_kms_key" "lambda_env" {
   description             = "KMS key for Lambda environment variables"
   deletion_window_in_days = 7
   enable_key_rotation     = true
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          AWS = "*"
+        },
+        Action = "kms:*",
+        Resource = "*"
+      }
+    ]
+  })
 }
 
 resource "aws_kms_alias" "lambda_env" {
   name          = "alias/${var.prefix}-lambda-env"
   target_key_id = aws_kms_key.lambda_env.key_id
+
 }
