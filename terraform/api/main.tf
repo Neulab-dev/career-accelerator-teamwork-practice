@@ -111,5 +111,5 @@ resource "aws_api_gateway_method_settings" "api_settings" {
 
 resource "aws_cloudwatch_log_group" "api_gateway_logs" {
   name              = "/aws/api-gateway/${var.prefix}-api"
-  retention_in_days = 7
+  retention_in_days = 365
 }
