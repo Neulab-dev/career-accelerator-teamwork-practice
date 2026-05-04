@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_api_gateway_rest_api" "api" {
   name        = "${var.prefix}-api"
   description = "API Gateway for the Shortly service"
@@ -62,9 +64,9 @@ resource "aws_kms_key" "lambda_env" {
       {
         Effect = "Allow",
         Principal = {
-          AWS = "*"
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
         },
-        Action = "kms:*",
+        Action   = "kms:*",
         Resource = "*"
       }
     ]
@@ -74,5 +76,4 @@ resource "aws_kms_key" "lambda_env" {
 resource "aws_kms_alias" "lambda_env" {
   name          = "alias/${var.prefix}-lambda-env"
   target_key_id = aws_kms_key.lambda_env.key_id
-
 }

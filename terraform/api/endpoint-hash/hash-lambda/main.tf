@@ -84,6 +84,4 @@ resource "aws_lambda_function" "hash_lambda" {
 
 resource "aws_security_group" "hash_lambda_sg" {
   name = "${var.prefix}-hash-lambda"
-
-
 }
