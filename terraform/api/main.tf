@@ -63,13 +63,19 @@ module "endpoint_hash" {
     execution_arn    = aws_api_gateway_rest_api.api.execution_arn
   }
 
-  prefix              = var.prefix
-  table_arn           = var.table_arn
-  hash_length         = var.hash_length
-  max_hash_attempts   = var.max_hash_attempts
-  private_subnets_ids = var.private_subnets_ids
-  lambda_kms_key_arn  = aws_kms_key.lambda_env.arn
-  vpc_id              = var.vpc_id
+  prefix                    = var.prefix
+  table_arn                 = var.table_arn
+  hash_length               = var.hash_length
+  max_hash_attempts         = var.max_hash_attempts
+  private_subnets_ids       = var.private_subnets_ids
+  lambda_kms_key_arn        = aws_kms_key.lambda_env.arn
+  vpc_id                    = var.vpc_id
+  max_concurrent_executions = local.max_concurrent_executions
+
+  code_signing_config = {
+    code_signing_bucket_id = module.code_signing_bucket.bucket_id
+    signing_profile_arn    = aws_signer_signing_profile.this.arn
+  }
 }
 
 resource "aws_kms_key" "lambda_env" {
@@ -112,4 +118,9 @@ resource "aws_api_gateway_method_settings" "api_settings" {
 resource "aws_cloudwatch_log_group" "api_gateway_logs" {
   name              = "/aws/api-gateway/${var.prefix}-api"
   retention_in_days = 365
+}
+
+
+locals {
+  max_concurrent_executions = 1000
 }

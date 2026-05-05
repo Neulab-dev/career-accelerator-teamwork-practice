@@ -1,75 +1,24 @@
-# ZIP lambda
-data "archive_file" "lambda_zip" {
-  type        = "zip"
-  source_dir  = "${path.module}/lambda-code"
-  output_path = "${path.module}/lambda.zip"
-}
-
-# IAM role
-resource "aws_iam_role" "lambda_role" {
-  name = "${var.prefix}-lambda-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = {
-        Service = "lambda.amazonaws.com"
-      }
-      Action = "sts:AssumeRole"
-    }]
-  })
-}
-
-# basic logs
-resource "aws_iam_role_policy_attachment" "lambda_basic" {
-  role       = aws_iam_role.lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-}
-
-// For X-Ray permissions
-resource "aws_iam_role_policy_attachment" "lambda_xray" {
-  role       = aws_iam_role.lambda_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
-}
-
-# policy
-resource "aws_iam_role_policy" "dynamodb_policy" {
-  name = "${var.prefix}-dynamodb-policy"
-  role = aws_iam_role.lambda_role.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Action = [
-        "dynamodb:GetItem",
-        "dynamodb:PutItem"
-      ]
-      Resource = var.table_arn
-    }]
-  })
-}
-
-# Lambda
 resource "aws_lambda_function" "hash_lambda" {
   function_name = "${var.prefix}-hash"
   role          = aws_iam_role.lambda_role.arn
   handler       = "lambda.handler"
   runtime       = "nodejs24.x"
-  // This prevents the Lambda from scaling infinitely
-  reserved_concurrent_executions = 10
+  # This prevents the Lambda from scaling infinitely
+  reserved_concurrent_executions = var.max_concurrent_executions
 
-  filename         = data.archive_file.lambda_zip.output_path
-  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+  s3_bucket = aws_signer_signing_job.this.signed_object[0].s3[0].bucket
+  s3_key    = aws_signer_signing_job.this.signed_object[0].s3[0].key
+
+  code_signing_config_arn = var.code_signing_config.signing_profile_arn
 
   kms_key_arn = var.lambda_kms_key_arn
-  // for X-Ray
+  # for X-Ray
   tracing_config {
     mode = "Active"
   }
+
   vpc_config {
-    // We are adding this for security reasons - https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1
+    # We are adding this for security reasons - https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1
     subnet_ids         = var.private_subnets_ids
     security_group_ids = [aws_security_group.hash_lambda_sg.id]
   }
@@ -82,6 +31,41 @@ resource "aws_lambda_function" "hash_lambda" {
     }
   }
 }
+
+# ZIP lambda
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_dir  = "${path.module}/lambda-code"
+  output_path = "${path.module}/lambda.zip"
+}
+
+resource "aws_s3_object" "unsigned" {
+  bucket = var.code_signing_config.code_signing_bucket_id
+  key    = "unsigned/${var.prefix}-hash-lambda/lambda.zip"
+  source = data.archive_file.lambda_zip.output_path
+}
+
+resource "aws_signer_signing_job" "this" {
+  profile_name = reverse(split("/", var.code_signing_config.signing_profile_arn))[0]
+
+  source {
+    s3 {
+      bucket  = var.code_signing_config.code_signing_bucket_id
+      key     = aws_s3_object.unsigned.id
+      version = aws_s3_object.unsigned.version_id
+    }
+  }
+
+  destination {
+    s3 {
+      bucket = var.code_signing_config.code_signing_bucket_id
+      prefix = "signed/"
+    }
+  }
+
+  ignore_signing_job_failure = true
+}
+
 
 resource "aws_security_group" "hash_lambda_sg" {
   name        = "${var.prefix}-hash-lambda"

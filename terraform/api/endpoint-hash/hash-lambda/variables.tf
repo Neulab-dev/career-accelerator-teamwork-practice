@@ -34,3 +34,15 @@ variable "vpc_id" {
   type        = string
   description = "VPC ID where the Lambda security group will be created"
 }
+
+variable "max_concurrent_executions" {
+  type        = number
+  description = "The maximum number of concurrent lambda executions"
+}
+
+variable "code_signing_config" {
+  type = object({
+    code_signing_bucket_id = string
+    signing_profile_arn    = string
+  })
+}
