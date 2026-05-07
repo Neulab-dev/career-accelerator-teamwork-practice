@@ -3,13 +3,14 @@ resource "aws_lambda_function" "hash_lambda" {
   role          = aws_iam_role.lambda_role.arn
   handler       = "lambda.handler"
   runtime       = "nodejs24.x"
+  timeout       = "7"
   # This prevents the Lambda from scaling infinitely
   reserved_concurrent_executions = var.max_concurrent_executions
 
   s3_bucket = aws_signer_signing_job.this.signed_object[0].s3[0].bucket
   s3_key    = aws_signer_signing_job.this.signed_object[0].s3[0].key
 
-  code_signing_config_arn = var.code_signing_config.signing_profile_arn
+  code_signing_config_arn = var.code_signing_config.signing_config_arn
 
   kms_key_arn = var.lambda_kms_key_arn
   # for X-Ray
@@ -39,9 +40,13 @@ data "archive_file" "lambda_zip" {
   output_path = "${path.module}/lambda.zip"
 }
 
+locals {
+  unsigned_object_key = "unsigned/${var.prefix}-hash-lambda/lambda.zip"
+}
+
 resource "aws_s3_object" "unsigned" {
   bucket = var.code_signing_config.code_signing_bucket_id
-  key    = "unsigned/${var.prefix}-hash-lambda/lambda.zip"
+  key    = local.unsigned_object_key
   source = data.archive_file.lambda_zip.output_path
 }
 
@@ -51,7 +56,7 @@ resource "aws_signer_signing_job" "this" {
   source {
     s3 {
       bucket  = var.code_signing_config.code_signing_bucket_id
-      key     = aws_s3_object.unsigned.id
+      key     = local.unsigned_object_key
       version = aws_s3_object.unsigned.version_id
     }
   }
@@ -71,4 +76,11 @@ resource "aws_security_group" "hash_lambda_sg" {
   name        = "${var.prefix}-hash-lambda"
   description = "Security group for the hash Lambda function"
   vpc_id      = var.vpc_id
+
+}
+
+resource "aws_vpc_security_group_egress_rule" "hash_lambda_egress" {
+  security_group_id = aws_security_group.hash_lambda_sg.id
+  ip_protocol       = "-1"
+  cidr_ipv4         = "0.0.0.0/0"
 }

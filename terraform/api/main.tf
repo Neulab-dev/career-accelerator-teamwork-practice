@@ -69,12 +69,14 @@ module "endpoint_hash" {
   max_hash_attempts         = var.max_hash_attempts
   private_subnets_ids       = var.private_subnets_ids
   lambda_kms_key_arn        = aws_kms_key.lambda_env.arn
+  dynamodb_kms_key_arn      = var.dynamodb_kms_key_arn
   vpc_id                    = var.vpc_id
   max_concurrent_executions = local.max_concurrent_executions
 
   code_signing_config = {
     code_signing_bucket_id = module.code_signing_bucket.bucket_id
     signing_profile_arn    = aws_signer_signing_profile.this.arn
+    signing_config_arn     = aws_lambda_code_signing_config.this.arn
   }
 }
 
@@ -122,5 +124,5 @@ resource "aws_cloudwatch_log_group" "api_gateway_logs" {
 
 
 locals {
-  max_concurrent_executions = 1000
+  max_concurrent_executions = 300
 }

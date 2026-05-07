@@ -27,3 +27,8 @@ variable "vpc_id" {
   type        = string
   description = "VPC ID used by API-related Lambda resources"
 }
+
+variable "dynamodb_kms_key_arn" {
+  type        = string
+  description = "ARN of the KMS key used to encrypt the DynamoDB table"
+}

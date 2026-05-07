@@ -6,7 +6,7 @@ module "code_signing_bucket" {
 resource "aws_signer_signing_profile" "this" {
   platform_id = "AWSLambda-SHA384-ECDSA"
   # invalid value for name (must be alphanumeric with max length of 64 characters)
-  name = "${substr(var.prefix, 0, 51)}_lambda_signer"
+  name = "${substr(var.prefix, 0, 51)}_lambda_code_signer"
 
   signature_validity_period {
     value = 3
@@ -23,3 +23,4 @@ resource "aws_lambda_code_signing_config" "this" {
     untrusted_artifact_on_deployment = "Enforce"
   }
 }
+

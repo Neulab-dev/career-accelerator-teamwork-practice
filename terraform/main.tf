@@ -22,12 +22,13 @@ locals {
 module "api" {
   source = "./api"
 
-  prefix              = local.prefix
-  table_arn           = module.dynamodb.table_arn
-  hash_length         = local.hash_length
-  max_hash_attempts   = local.max_hash_attempts
-  private_subnets_ids = module.network.private_subnet_ids
-  vpc_id              = module.network.vpc_id
+  prefix               = local.prefix
+  table_arn            = module.dynamodb.table_arn
+  dynamodb_kms_key_arn = module.dynamodb.kms_key_arn
+  hash_length          = local.hash_length
+  max_hash_attempts    = local.max_hash_attempts
+  private_subnets_ids  = module.network.private_subnet_ids
+  vpc_id               = module.network.vpc_id
 }
 
 module "dynamodb" {

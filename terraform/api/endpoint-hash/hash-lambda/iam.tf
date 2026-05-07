@@ -43,3 +43,37 @@ resource "aws_iam_role_policy" "dynamodb_policy" {
     }]
   })
 }
+
+resource "aws_iam_role_policy" "kms_policy" {
+  name = "${var.prefix}-kms-policy"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = "kms:Decrypt"
+      Resource = [var.lambda_kms_key_arn, var.dynamodb_kms_key_arn]
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "ec2_policy" {
+  name = "${var.prefix}-ec2-network-interface-policy"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:CreateNetworkInterface",
+        "ec2:DeleteNetworkInterface",
+        "ec2:DescribeInstances",
+        "ec2:AttachNetworkInterface"
+      ]
+      Resource = "*"
+    }]
+  })
+}

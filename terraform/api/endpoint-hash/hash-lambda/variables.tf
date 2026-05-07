@@ -30,6 +30,11 @@ variable "lambda_kms_key_arn" {
   description = "KMS key ARN used to encrypt Lambda environment variables"
 }
 
+variable "dynamodb_kms_key_arn" {
+  type        = string
+  description = "ARN of the KMS key used to encrypt the DynamoDB table"
+}
+
 variable "vpc_id" {
   type        = string
   description = "VPC ID where the Lambda security group will be created"
@@ -44,5 +49,6 @@ variable "code_signing_config" {
   type = object({
     code_signing_bucket_id = string
     signing_profile_arn    = string
+    signing_config_arn     = string
   })
 }
