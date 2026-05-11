@@ -29,6 +29,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
   }
 }
 
+#checkov:skip=CKV_AWS_120:Caching is not needed for this API Stage as it can incur costs
 resource "aws_api_gateway_stage" "api_stage" {
   deployment_id = aws_api_gateway_deployment.api_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.api.id
@@ -105,6 +106,7 @@ resource "aws_kms_alias" "lambda_env" {
   target_key_id = aws_kms_key.lambda_env.key_id
 }
 
+#checkov:skip=CKV_AWS_225:Caching is not needed for this API Stage as it can incur costs
 resource "aws_api_gateway_method_settings" "api_settings" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   stage_name  = aws_api_gateway_stage.api_stage.stage_name

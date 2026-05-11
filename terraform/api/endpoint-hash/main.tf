@@ -4,6 +4,7 @@ resource "aws_api_gateway_resource" "hash_resource" {
   path_part   = "hash"
 }
 
+#checkov:skip=CKV_AWS_59:This is a public method by design
 resource "aws_api_gateway_method" "hash_method" {
   rest_api_id   = var.rest_api_config.api_id
   resource_id   = aws_api_gateway_resource.hash_resource.id
