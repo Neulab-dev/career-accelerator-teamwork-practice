@@ -83,5 +83,5 @@ resource "aws_vpc_security_group_egress_rule" "hash_lambda_egress" {
   security_group_id = aws_security_group.hash_lambda_sg.id
   ip_protocol       = "-1"
   cidr_ipv4         = "0.0.0.0/0"
-  description = "Allow Lambda function to access all"
+  description       = "Allow Lambda function to access all"
 }
