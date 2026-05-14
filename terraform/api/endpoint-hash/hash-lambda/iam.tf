@@ -51,30 +51,12 @@ resource "aws_iam_role_policy" "kms_policy" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect   = "Allow"
-      Action   = "kms:Decrypt"
-      Resource = [var.lambda_kms_key_arn, var.dynamodb_kms_key_arn]
+      Effect = "Allow"
+      Action = [
+        "kms:GenerateDataKey",
+        "kms:Decrypt"
+      ]
+      Resource = [var.dynamodb_kms_key_arn]
     }]
   })
 }
-
-# resource "aws_iam_role_policy" "ec2_policy" {
-#   name = "${var.prefix}-ec2-network-interface-policy"
-#   role = aws_iam_role.lambda_role.id
-#
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [{
-#       Effect = "Allow"
-#       Action = [
-#         "ec2:DescribeNetworkInterfaces",
-#         "ec2:CreateNetworkInterface",
-#         "ec2:DescribeSubnets",
-#         "ec2:DeleteNetworkInterface",
-#         "ec2:AssignPrivateIpAddresses",
-#         "ec2:UnassignPrivateIpAddresses"
-#       ]
-#       Resource = "*"
-#     }]
-#   })
-# }

@@ -1,4 +1,5 @@
 data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
 data "aws_prefix_list" "dynamodb" {
   name = "com.amazonaws.${data.aws_region.current.region}.dynamodb"
 }
@@ -7,6 +8,20 @@ resource "aws_kms_key" "lambda" {
   description             = "KMS key for encrypting ${var.prefix} hash Lambda environment variables"
   deletion_window_in_days = 7
   enable_key_rotation     = true
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        },
+        Action   = "kms:*",
+        Resource = "*"
+      }
+    ]
+  })
 
   tags = {
     Name = "${var.prefix}-hash-lambda-kms"

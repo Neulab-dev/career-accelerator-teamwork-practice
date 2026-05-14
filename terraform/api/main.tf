@@ -1,5 +1,3 @@
-data "aws_caller_identity" "current" {}
-
 resource "aws_api_gateway_rest_api" "api" {
   name        = "${var.prefix}-api"
   description = "API Gateway for the Shortly service"
@@ -100,7 +98,6 @@ module "endpoint_hash" {
   hash_length               = var.hash_length
   max_hash_attempts         = var.max_hash_attempts
   private_subnets_ids       = var.private_subnets_ids
-  lambda_kms_key_arn        = aws_kms_key.lambda_env.arn
   dynamodb_kms_key_arn      = var.dynamodb_kms_key_arn
   vpc_id                    = var.vpc_id
   max_concurrent_executions = local.max_concurrent_executions
@@ -110,31 +107,6 @@ module "endpoint_hash" {
     signing_profile_arn    = aws_signer_signing_profile.this.arn
     signing_config_arn     = aws_lambda_code_signing_config.this.arn
   }
-}
-
-resource "aws_kms_key" "lambda_env" {
-  description             = "KMS key for Lambda environment variables"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-        },
-        Action   = "kms:*",
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-resource "aws_kms_alias" "lambda_env" {
-  name          = "alias/${var.prefix}-lambda-env"
-  target_key_id = aws_kms_key.lambda_env.key_id
 }
 
 resource "aws_api_gateway_method_settings" "api_settings" {

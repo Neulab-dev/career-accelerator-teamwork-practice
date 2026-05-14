@@ -41,7 +41,6 @@ module "hash_lambda" {
   max_hash_attempts         = var.max_hash_attempts
   hash_length               = var.hash_length
   private_subnets_ids       = var.private_subnets_ids
-  lambda_kms_key_arn        = var.lambda_kms_key_arn
   dynamodb_kms_key_arn      = var.dynamodb_kms_key_arn
   vpc_id                    = var.vpc_id
   max_concurrent_executions = var.max_concurrent_executions
