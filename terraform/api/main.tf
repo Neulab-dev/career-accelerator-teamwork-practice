@@ -28,6 +28,34 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     create_before_destroy = true
   }
 }
+// CloudWatch Logs role for API Gateway. Needed for the stage
+resource "aws_iam_role" "api_gateway_cloudwatch" {
+  name = "${var.prefix}-api-gateway-cloudwatch-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "apigateway.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "api_gateway_cloudwatch" {
+  role       = aws_iam_role.api_gateway_cloudwatch.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+}
+
+resource "aws_api_gateway_account" "api_gateway_account" {
+  cloudwatch_role_arn = aws_iam_role.api_gateway_cloudwatch.arn
+
+  depends_on = [
+    aws_iam_role_policy_attachment.api_gateway_cloudwatch
+  ]
+}
 
 resource "aws_api_gateway_stage" "api_stage" {
   deployment_id = aws_api_gateway_deployment.api_deployment.id
@@ -52,6 +80,9 @@ resource "aws_api_gateway_stage" "api_stage" {
       responseLength = "$context.responseLength"
     })
   }
+  depends_on = [
+    aws_api_gateway_account.api_gateway_account
+  ]
 }
 
 module "endpoint_hash" {
@@ -63,13 +94,13 @@ module "endpoint_hash" {
     execution_arn    = aws_api_gateway_rest_api.api.execution_arn
   }
 
-  prefix              = var.prefix
-  table_arn           = var.table_arn
-  hash_length         = var.hash_length
-  max_hash_attempts   = var.max_hash_attempts
-  private_subnets_ids = var.private_subnets_ids
-  lambda_kms_key_arn  = aws_kms_key.lambda_env.arn
-  vpc_id              = var.vpc_id
+  prefix               = var.prefix
+  table_arn            = var.table_arn
+  hash_length          = var.hash_length
+  max_hash_attempts    = var.max_hash_attempts
+  private_subnets_ids  = var.private_subnets_ids
+  vpc_id               = var.vpc_id
+  dynamodb_kms_key_arn = var.dynamodb_kms_key_arn
 }
 
 resource "aws_kms_key" "lambda_env" {
