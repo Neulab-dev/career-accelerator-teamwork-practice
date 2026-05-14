@@ -25,11 +25,6 @@ variable "private_subnets_ids" {
   description = "The ids for the subnets"
 }
 
-variable "lambda_kms_key_arn" {
-  type        = string
-  description = "KMS key ARN used to encrypt Lambda environment variables"
-}
-
 variable "dynamodb_kms_key_arn" {
   type        = string
   description = "ARN of the KMS key used to encrypt the DynamoDB table"

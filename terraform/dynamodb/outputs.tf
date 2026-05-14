@@ -5,5 +5,5 @@ output "table_arn" {
 
 output "kms_key_arn" {
   value       = aws_kms_key.dynamodb.arn
-  description = "ARN of the KMS key used to encrypt the DynamoDB table"
+  description = "ARN of the KMS key used for DynamoDB table encryption"
 }

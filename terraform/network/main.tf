@@ -1,3 +1,5 @@
+data "aws_region" "current" {}
+
 module "vpc" {
   # commit hash of version 6.6.1
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=7a28ce8ec6a17a8ca52710e47763f3a52c155110"
@@ -18,15 +20,14 @@ module "vpc" {
   }
 }
 
-# Allow internal traffic from private subnets to DynamoDB
 resource "aws_vpc_endpoint" "dynamodb" {
   vpc_id            = module.vpc.vpc_id
-  service_name      = "com.amazonaws.eu-central-1.dynamodb"
+  service_name      = "com.amazonaws.${data.aws_region.current.region}.dynamodb"
   vpc_endpoint_type = "Gateway"
-  route_table_ids   = module.vpc.private_route_table_ids
+
+  route_table_ids = module.vpc.private_route_table_ids
 
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
+    Name = "${var.prefix}-dynamodb-endpoint"
   }
 }
