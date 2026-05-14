@@ -26,3 +26,31 @@ variable "max_hash_attempts" {
   type        = number
   description = "The maximum number of attempts to generate a unique hash."
 }
+
+variable "private_subnets_ids" {
+  type        = list(string)
+  description = "The ids for the subnets"
+}
+
+variable "vpc_id" {
+  type        = string
+  description = "VPC ID used by the endpoint resources"
+}
+
+variable "max_concurrent_executions" {
+  type        = number
+  description = "The maximum number of concurrent lambda executions"
+}
+
+variable "code_signing_config" {
+  type = object({
+    code_signing_bucket_id = string
+    signing_profile_arn    = string
+    signing_config_arn     = string
+  })
+}
+
+variable "dynamodb_kms_key_arn" {
+  type        = string
+  description = "KMS key ARN used to encrypt the DynamoDB table."
+}

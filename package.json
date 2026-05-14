@@ -10,7 +10,7 @@
   },
   "scripts": {
     "format:check": "prettier . --check",
-    "format": "prettier . --write",
+    "format": "prettier . --write && terraform fmt -recursive",
     "lint:js": "eslint \"**/*.js\"",
     "lint:html": "htmlhint \"front-end/**/*.html\"",
     "lint:css": "stylelint \"front-end/**/*.css\""
