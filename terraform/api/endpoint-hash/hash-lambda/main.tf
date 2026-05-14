@@ -43,8 +43,8 @@ resource "aws_lambda_function" "hash_lambda" {
   # This prevents the Lambda from scaling infinitely
   reserved_concurrent_executions = var.max_concurrent_executions
 
-  s3_bucket = aws_signer_signing_job.this.signed_object[0].s3[0].bucket
-  s3_key    = aws_signer_signing_job.this.signed_object[0].s3[0].key
+  s3_bucket = aws_signer_signing_job.signing_job.signed_object[0].s3[0].bucket
+  s3_key    = aws_signer_signing_job.signing_job.signed_object[0].s3[0].key
 
   code_signing_config_arn = var.code_signing_config.signing_config_arn
 
@@ -86,7 +86,7 @@ resource "aws_s3_object" "unsigned" {
   source = data.archive_file.lambda_zip.output_path
 }
 
-resource "aws_signer_signing_job" "this" {
+resource "aws_signer_signing_job" "signing_job" {
   profile_name = reverse(split("/", var.code_signing_config.signing_profile_arn))[0]
 
   source {

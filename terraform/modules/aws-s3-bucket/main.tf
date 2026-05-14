@@ -4,7 +4,7 @@ resource "aws_s3_bucket" "bucket" {
   force_destroy = var.force_destroy
 }
 
-resource "aws_s3_bucket_versioning" "versioning_example" {
+resource "aws_s3_bucket_versioning" "versioning" {
   bucket = aws_s3_bucket.bucket.id
 
   versioning_configuration {
@@ -17,7 +17,7 @@ resource "aws_kms_key" "bucket" {
   deletion_window_in_days = 30
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
+resource "aws_s3_bucket_server_side_encryption_configuration" "encryption_configuration" {
   bucket = aws_s3_bucket.bucket.id
 
   rule {
@@ -28,7 +28,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "example" {
+resource "aws_s3_bucket_public_access_block" "access_block" {
   bucket = aws_s3_bucket.bucket.id
 
   block_public_acls       = true

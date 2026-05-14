@@ -3,7 +3,7 @@ module "code_signing_bucket" {
   bucket_name = "${var.prefix}-code-signing"
 }
 
-resource "aws_signer_signing_profile" "this" {
+resource "aws_signer_signing_profile" "signing_profile" {
   platform_id = "AWSLambda-SHA384-ECDSA"
   # invalid value for name (must be alphanumeric with max length of 64 characters)
   name = "${substr(var.prefix, 0, 51)}_lambda_code_signer"
@@ -14,9 +14,9 @@ resource "aws_signer_signing_profile" "this" {
   }
 }
 
-resource "aws_lambda_code_signing_config" "this" {
+resource "aws_lambda_code_signing_config" "signing_config" {
   allowed_publishers {
-    signing_profile_version_arns = [aws_signer_signing_profile.this.version_arn]
+    signing_profile_version_arns = [aws_signer_signing_profile.signing_profile.version_arn]
   }
 
   policies {

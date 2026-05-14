@@ -104,8 +104,8 @@ module "endpoint_hash" {
 
   code_signing_config = {
     code_signing_bucket_id = module.code_signing_bucket.bucket_id
-    signing_profile_arn    = aws_signer_signing_profile.this.arn
-    signing_config_arn     = aws_lambda_code_signing_config.this.arn
+    signing_profile_arn    = aws_signer_signing_profile.signing_profile.arn
+    signing_config_arn     = aws_lambda_code_signing_config.signing_config.arn
   }
 }
 
