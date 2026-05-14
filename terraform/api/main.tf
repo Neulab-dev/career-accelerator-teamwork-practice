@@ -1,5 +1,3 @@
-data "aws_caller_identity" "current" {}
-
 resource "aws_api_gateway_rest_api" "api" {
   name        = "${var.prefix}-api"
   description = "API Gateway for the Shortly service"
@@ -58,6 +56,7 @@ resource "aws_api_gateway_account" "api_gateway_account" {
 }
 
 resource "aws_api_gateway_stage" "api_stage" {
+  #checkov:skip=CKV_AWS_120:Caching is not needed for this API Stage as it can incur costs
   deployment_id = aws_api_gateway_deployment.api_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.api.id
   stage_name    = "prod"
@@ -94,41 +93,24 @@ module "endpoint_hash" {
     execution_arn    = aws_api_gateway_rest_api.api.execution_arn
   }
 
-  prefix               = var.prefix
-  table_arn            = var.table_arn
-  hash_length          = var.hash_length
-  max_hash_attempts    = var.max_hash_attempts
-  private_subnets_ids  = var.private_subnets_ids
-  vpc_id               = var.vpc_id
-  dynamodb_kms_key_arn = var.dynamodb_kms_key_arn
-}
+  prefix                    = var.prefix
+  table_arn                 = var.table_arn
+  hash_length               = var.hash_length
+  max_hash_attempts         = var.max_hash_attempts
+  private_subnets_ids       = var.private_subnets_ids
+  dynamodb_kms_key_arn      = var.dynamodb_kms_key_arn
+  vpc_id                    = var.vpc_id
+  max_concurrent_executions = local.max_concurrent_executions
 
-resource "aws_kms_key" "lambda_env" {
-  description             = "KMS key for Lambda environment variables"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-        },
-        Action   = "kms:*",
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-resource "aws_kms_alias" "lambda_env" {
-  name          = "alias/${var.prefix}-lambda-env"
-  target_key_id = aws_kms_key.lambda_env.key_id
+  code_signing_config = {
+    code_signing_bucket_id = module.code_signing_bucket.bucket_id
+    signing_profile_arn    = aws_signer_signing_profile.signing_profile.arn
+    signing_config_arn     = aws_lambda_code_signing_config.signing_config.arn
+  }
 }
 
 resource "aws_api_gateway_method_settings" "api_settings" {
+  #checkov:skip=CKV_AWS_225:Caching is not needed for this API Stage as it can incur costs
   rest_api_id = aws_api_gateway_rest_api.api.id
   stage_name  = aws_api_gateway_stage.api_stage.stage_name
   method_path = "*/*"
@@ -143,4 +125,9 @@ resource "aws_api_gateway_method_settings" "api_settings" {
 resource "aws_cloudwatch_log_group" "api_gateway_logs" {
   name              = "/aws/api-gateway/${var.prefix}-api"
   retention_in_days = 365
+}
+
+
+locals {
+  max_concurrent_executions = 300
 }

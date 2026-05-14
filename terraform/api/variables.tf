@@ -30,5 +30,5 @@ variable "vpc_id" {
 
 variable "dynamodb_kms_key_arn" {
   type        = string
-  description = "KMS key ARN used to encrypt the DynamoDB table."
+  description = "ARN of the KMS key used to encrypt the DynamoDB table"
 }

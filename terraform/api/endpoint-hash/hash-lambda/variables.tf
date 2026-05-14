@@ -25,13 +25,25 @@ variable "private_subnets_ids" {
   description = "The ids for the subnets"
 }
 
+variable "dynamodb_kms_key_arn" {
+  type        = string
+  description = "ARN of the KMS key used to encrypt the DynamoDB table"
+}
 
 variable "vpc_id" {
   type        = string
   description = "VPC ID where the Lambda security group will be created"
 }
 
-variable "dynamodb_kms_key_arn" {
-  type        = string
-  description = "KMS key ARN used to encrypt the DynamoDB table."
+variable "max_concurrent_executions" {
+  type        = number
+  description = "The maximum number of concurrent lambda executions"
+}
+
+variable "code_signing_config" {
+  type = object({
+    code_signing_bucket_id = string
+    signing_profile_arn    = string
+    signing_config_arn     = string
+  })
 }
